@@ -1,0 +1,33 @@
+version: '3'
+services:
+  mongo:
+    image: mongo:4.4.2
+    ports:
+      - "27017:27017"
+    networks:
+      - net
+  api:    
+    build:
+      context: ./server
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./server:/app
+    networks:
+      - net
+    depends_on:
+      - mongo
+  web:
+    build:
+      context: ./client
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./client:/app
+    depends_on:
+      - api
+    networks:
+      - net
+networks:
+  net:
+    driver: bridge

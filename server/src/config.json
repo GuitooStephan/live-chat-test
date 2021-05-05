@@ -1,0 +1,11 @@
+{
+    "PORT": 8080,
+    "MONGODB_URI": "mongodb://mongo:27017/livechat",
+    "JWKSURI": "https://dev-7fwamdci.eu.auth0.com/.well-known/jwks.json",
+    "ISSUER": "https://dev-7fwamdci.eu.auth0.com/",
+    "BASE_URL": "http://localhost:8080",
+    "CLIENT_SECRET": "zAQJysTC92hNaqhs4BmlOEmkr9bpqH-2GxihgzBLpQWAmzdScxcvaP_9ckg19Z7J",
+    "CLIENT_URL": "http://localhost:3000",
+    "APP_NAME": "livechat",
+    "AUTH0_AUDIENCE": "http://localhost:5000"
+}
