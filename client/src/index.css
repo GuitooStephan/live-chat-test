@@ -1,0 +1,125 @@
+:root {
+  --colorPrimary: #007bff;
+  --colorPrimaryDark: #001429;
+  --colorSecondary: #FAA916;
+}
+
+
+body {
+  font-family: 'Lato', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+a {
+  color: var( --colorSecondary ) !important;
+}
+
+/* Height */
+.h-100-vh {
+  height: 100vh;
+}
+
+/* Width */
+.max-w-400 {
+  max-width: 400px;
+}
+
+/* Font size */
+.font-size-14 {
+  font-size: 14px;
+}
+
+/* Chat */
+.main {
+  height: 100%;
+}
+
+.main .right {
+  margin-left: 350px;
+  overflow: hidden;
+  height: 100vh;
+}
+
+.main .right .top-bar {
+  padding: 20px 22.5px 20px 22.5px;
+  background: var(--colorPrimaryDark);
+}
+
+.main .right .message-input-wrapper {
+  position: absolute;
+  width: 100%;
+  left: 0;
+  bottom: 0;
+  background-color: rgb(228, 228, 228);
+}
+
+.main .right .message-input-wrapper .message-input-form {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-bottom: 12px;
+  padding-top: 12px;
+}
+
+.main .right .message-input-wrapper .message-input-form .message-input {
+  width: 80%;
+}
+
+.main .right .messages-wrapper {
+  padding: 40px 30px 0 30px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 73%;
+}
+
+.main .right .message {
+  color: #fff;
+  width: 40%;
+  background-color:#003063;
+}
+
+.main .left {
+  width: 350px;
+  background: var(--colorPrimaryDark);
+  bottom: 0;
+  position: fixed;
+  top: 0px;
+  transition-duration: .2s;
+  box-shadow: 1px 0.05rem 0.01rem rgba(75, 75, 90, 0.075);
+  z-index: 99;
+}
+
+.main .left .profile {
+  padding: 20px 30px 30px 30px;
+}
+
+.main .left .title, .main .left .empty-state {
+  padding: 0 30px 0 30px;
+}
+
+.main .left .active-user {
+  padding: 10px 30px 10px 30px;
+}
+
+.main .left .active-user .email {
+  cursor: pointer;
+}
+
+.main .left .active-user:hover {
+  background-color: #001f3f;
+}
+
+.main .left .active-user .block-button {
+  z-index: 3;
+}
+
+.main .left .content {
+  height: 100%;
+  padding-bottom: 30px;
+}

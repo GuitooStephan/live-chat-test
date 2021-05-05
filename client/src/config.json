@@ -1,0 +1,6 @@
+{
+    "AUTH0_DOMAIN": "dev-7fwamdci.eu.auth0.com",
+    "AUTH0_CLIENT_ID": "Cb00Qufi3PpdsalkHwx4EAXZ9ZJAc3mA",
+    "AUTH0_AUDIENCE": "http://localhost:5000",
+    "SERVER_URL": "http://localhost:8080"
+}
