@@ -1,4 +1,7 @@
-import { FETCH_USER_REQUEST, FETCH_USER_SUCCEEDED, FETCH_USER_FAILURE, SET_USER } from '../actions/types';
+import {
+    FETCH_USER_REQUEST, FETCH_USER_SUCCEEDED, FETCH_USER_FAILURE,
+    FETCH_UPDATED_USER_REQUEST, FETCH_UPDATED_USER_SUCCEEDED, FETCH_UPDATED_USER_FAILURE
+} from '../actions/types';
 import { IDLE, SUCCEEDED, FAILURE, LOADING } from '../../constants/reducer.constants';
 
 const initialState = {
@@ -14,25 +17,39 @@ const userReducer = ( state=initialState, action ) => {
                 ...state,
                 status: LOADING,
                 error: null
-            }
+            };
         case FETCH_USER_SUCCEEDED:
             return {
                 ...state,
                 data: action.payload.data,
                 status: SUCCEEDED,
                 error: null
-            }
+            };
         case FETCH_USER_FAILURE:
             return {
                 ...state,
                 status: FAILURE,
                 error: action.payload.error
-            }
-        case SET_USER:
+            };
+        case FETCH_UPDATED_USER_REQUEST:
             return {
                 ...state,
-                data: action.payload.newUser
-            }
+                status: LOADING,
+                error: null
+            };
+        case FETCH_UPDATED_USER_SUCCEEDED:
+            return {
+                ...state,
+                data: action.payload.data,
+                status: SUCCEEDED,
+                error: null
+            };
+        case FETCH_UPDATED_USER_FAILURE:
+            return {
+                ...state,
+                status: FAILURE,
+                error: action.payload.error
+            };
         default:
             return state;
     }

@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useEffect, useState, useReducer } from 'react';
 import TopBar from './TopBar';
 import Messages from './Messages';
 import MessageInput from './MessageInput';
@@ -14,34 +15,46 @@ import { sendMessageToRoom, joinRoom } from '../../../core/services/chat.service
 
 const Main = props => {
     const [message, setMessage] = useState('');
-    const [messages, setMessages] = useState([]);
     const [toUser, setToUser] = useState();
+    const [messages, setMessages] = useReducer((messages, { type, value }) => {
+        switch (type) {
+            case "set":
+                return [...value];
+            case "add":
+                return [...messages, value];
+            default:
+                return messages;
+        }
+    }, []);
 
     useEffect(() => {
         if ( props.room && props.currentUser && props.socket ) {
             const _toUser = props.room.participants.find( p => p._id !== props.currentUser._id );
             setToUser( _toUser );
-            setMessages( props.room.messages.map( m => ( { ...m, mine: m.user !== _toUser._id } ) ) );
-
+            setMessages({ type: "set", value: props.room.messages.map( m => ( { text: m.text, user: m.user, mine: m.user !== _toUser._id } ) )});
             joinRoom( props.room.name );
-        }
-    }, [props.room, props.socket, props.currentUser]);
 
-    useEffect(() => {
-        if ( props.socket && toUser ) {
-            props.socket.on( 'sentMessageInRoom', data => {
-                setMessages( [ ...messages, { ...data, mine: data.user !== toUser._id } ] )
-            } );
+            onSendMessage( _toUser );
         }
-    }, [messages, toUser, props.socket ]);
+    }, [props.room]);
 
     useEffect( () => {
         if ( props.activeUsers && toUser ) {
             if ( ! props.activeUsers.some( u => u._id === toUser._id ) ) {
+                props.socket.removeAllListeners('sentMessageInRoom');
                 props.removeChat();
             }
         }
-    }, [ props, toUser ] );
+    }, [ props.activeUsers, toUser ] );
+
+    const onSendMessage = _toUser => {
+        props.socket.removeAllListeners('sentMessageInRoom');
+        props.socket.on( 'sentMessageInRoom', data => {
+            if ( props.room.name === data.room ) {
+                setMessages( { type: "add", value: { text: data.text, user: data.user, mine: data.user !== _toUser._id } } );
+            }
+        } );
+    };
 
     const sendMessage = event => {
         event.preventDefault();

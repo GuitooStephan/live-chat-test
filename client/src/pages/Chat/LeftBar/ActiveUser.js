@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react';
 import { Avatar } from '@material-ui/core';
 import { connect } from 'react-redux';
 import { fetchChat, removeChat } from '../../../core/redux/actions/chat.actions';
-import { setUser } from '../../../core/redux/actions/user.actions';
 import { blockUser, unblockUser } from '../../../core/services/user.service';
+
+import * as userSelectors from '../../../core/redux/selectors/user.selectors';
 
 const ActiveUser = props => {
     const [blocked, setBlocked] = useState(false);
@@ -15,16 +16,14 @@ const ActiveUser = props => {
 
     const block = async event => {
         event.preventDefault();
-        const updatedCurrentUser = await blockUser( props.currentUser._id, { id: props.user._id } );
+        await blockUser( props.currentUser._id, { id: props.user._id } );
         props.removeChat();
-        props.setUser( updatedCurrentUser.data );
     };
 
     const unblock = async event => {
         event.preventDefault();
-        const updatedCurrentUser = await unblockUser( props.currentUser._id, { id: props.user._id } );
+        await unblockUser( props.currentUser._id, { id: props.user._id } );
         props.removeChat();
-        props.setUser( updatedCurrentUser.data );
     };
 
     useEffect( () => {
@@ -64,5 +63,11 @@ const ActiveUser = props => {
     )
 }
 
-export default connect( null, { fetchChat, removeChat, setUser } )( ActiveUser )
+const select = state => {
+    return {
+        currentUser: userSelectors.userDataSelector(state)
+    }
+}
+
+export default connect( select, { fetchChat, removeChat } )( ActiveUser )
 

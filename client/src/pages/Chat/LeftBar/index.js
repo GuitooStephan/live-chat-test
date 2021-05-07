@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import { Avatar } from '@material-ui/core';
@@ -9,6 +10,7 @@ import ActiveUser from './ActiveUser';
 import * as userSelectors from '../../../core/redux/selectors/user.selectors';
 import * as activeUsersSelectors from '../../../core/redux/selectors/active-users.selectors';
 import { setActiveUsers as setActiveUsersAction } from '../../../core/redux/actions/active-users.actions';
+import { getUpdatedUser } from '../../../core/redux/actions/user.actions';
 
 
 const LeftBar = props => {
@@ -19,12 +21,15 @@ const LeftBar = props => {
     useEffect(() => {
         if ( props.data && props.socket ) {
             setCurrentUser( props.data );
-
             props.socket.on( 'appUsersUpdate', async data => {
                 props.setActiveUsersAction( props.data._id );
             } );
+            props.socket.on( 'blockUsersUpdate', async data => {
+                props.setActiveUsersAction( props.data._id );
+                props.getUpdatedUser( props.data._id );
+            } );
         }
-    }, [ props ]);
+    }, [ props.socket ]);
 
     useEffect( () => {
         if ( props.activeUsers ) {
@@ -65,7 +70,7 @@ const LeftBar = props => {
                 </div>
                 <h5 className="mb-4 title">Active</h5>
                 { activeUsers.length ?
-                    activeUsers.map( ( user, i ) => <ActiveUser key={i} user={user} currentUser={props.data}></ActiveUser> ) :
+                    activeUsers.map( ( user, i ) => <ActiveUser key={i} user={user}></ActiveUser> ) :
                     <div className="empty-state"><h6>No users</h6></div>
                 }
             </div>
@@ -81,4 +86,4 @@ const select = state => {
     }
 }
 
-export default connect( select, { setActiveUsersAction } )( LeftBar );
+export default connect( select, { setActiveUsersAction, getUpdatedUser } )( LeftBar );

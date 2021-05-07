@@ -5,6 +5,11 @@ export const getProfile = payload => {
     return post( url, payload );
 };
 
+export const getUpdatedProfile = id => {
+    const url = `/users/${id}`;
+    return get( url );
+};
+
 export const getActiveUsers = id => {
     const url = `/users/${id}/active_users`;
     return get( url );

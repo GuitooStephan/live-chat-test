@@ -6,25 +6,14 @@ import config from '../../config.json';
 let socket;
 
 export const connect = () => {
-    socket = io( config.SERVER_URL );
+    if ( ! socket || socket.disconnected  ) {
+        socket = io( config.SERVER_URL );
+    }
     return socket;
 };
 
 export const joinApp = email => {
     socket.emit( 'joinApp', { email } );
-};
-
-export const disconnect = () => {
-    if ( socket ) {
-        socket.off();
-    }
-};
-
-export const getSocket = () => {
-    if ( socket && socket.disconnected ) {
-        socket = socket = io( config.SERVER_URL );
-    }
-    return socket;
 };
 
 export const joinRoom = name => {

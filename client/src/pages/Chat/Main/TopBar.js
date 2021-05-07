@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Avatar } from '@material-ui/core';
@@ -14,7 +15,7 @@ const TopBar = props => {
             setRoom( props.room );
             setReceivingUser( props.room.participants.find( p => p._id !== props.currentUser._id ) );
         }
-    }, [ props ] );
+    }, [ props.room ] );
 
 
     if ( !room ) {

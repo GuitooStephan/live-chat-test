@@ -11,7 +11,7 @@ const activeUsersReducer = ( state=initialState, action ) => {
             return {
                 ...state,
                 data: action.payload.data
-            }
+            };
         default:
             return state;
     }

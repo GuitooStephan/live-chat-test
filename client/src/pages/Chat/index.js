@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { useAuth0 } from '@auth0/auth0-react';
@@ -8,42 +9,30 @@ import Main from './Main';
 import { fetchUser } from '../../core/redux/actions/user.actions';
 import * as userSelectors from '../../core/redux/selectors/user.selectors';
 import { setTokenInterceptor } from '../../core/services/api.service';
-import { connect as socketConnect, joinApp, disconnect } from '../../core/services/chat.service';
+import { connect as socketConnect, joinApp } from '../../core/services/chat.service';
+
 
 const Chat = props => {
-    const [ token, setToken ] = useState('');
     const [ socket, setSocket ] = useState('');
     const { user, getAccessTokenSilently } = useAuth0();
 
     useEffect( () => {
-        const init = async () => {
-            const token = await getAccessTokenSilently();
-            setToken( token );
-        };
-
-        init();
-    }, [] );
-
-    useEffect( () => {
-        if ( user && token ) {
+        getAccessTokenSilently().then( token => {
             setTokenInterceptor( token );
             props.fetchUser( { picture: user.picture, email: user.email, name: user.name } );
-        }
-    }, [ token, user ] );
+        } );
+    }, [] );
 
     useEffect( () => {
         if ( props.data ) {
             const socket = socketConnect();
             setSocket( socket );
 
-            socket.on( 'connectedApp', () => {
+            socket.once( 'connectedApp', () => {
                 joinApp( user.email );
             } );
         }
-        return () => {
-            disconnect();
-        };
-    }, [ props, user ] );
+    }, [ props.data, user ] );
 
     return (
         <>

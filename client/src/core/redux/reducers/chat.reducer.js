@@ -15,27 +15,27 @@ const chatReducer = ( state=initialState, action ) => {
                 ...state,
                 status: LOADING,
                 error: null
-            }
+            };
         case FETCH_CHAT_SUCCEEDED:
             return {
                 ...state,
                 data: action.payload.data,
                 status: SUCCEEDED,
                 error: null
-            }
+            };
         case FETCH_CHAT_FAILURE:
             return {
                 ...state,
                 status: FAILURE,
                 error: action.payload.error
-            }
+            };
         case REMOVE_CHAT:
             return {
                 ...state,
                 data: null,
                 status: IDLE,
                 error: null
-            }
+            };
         default:
             return state;
     }
