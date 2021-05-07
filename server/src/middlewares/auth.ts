@@ -1,12 +1,12 @@
 import jwt from 'express-jwt';
 import jwksRsa from 'jwks-rsa';
 
-const config = require( '../config.json' );
+import config from '../config.json';
 
 
 const authMiddleware = jwt({
     // Dynamically provide a signing key
-    // based on the kid in the header and 
+    // based on the kid in the header and
     // the signing keys provided by the JWKS endpoint.
     secret: jwksRsa.expressJwtSecret({
         cache: true,
@@ -16,7 +16,7 @@ const authMiddleware = jwt({
     }),
 
     // Validate the audience and the issuer.
-    audience: config.AUDIENCE,
+    audience: config.AUTH0_AUDIENCE,
     issuer: [config.ISSUER],
     algorithms: ['RS256']
 });

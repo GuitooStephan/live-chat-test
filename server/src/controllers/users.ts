@@ -4,10 +4,19 @@ import Joi from 'joi';
 
 import { User } from '../db/models/users';
 import { validate } from '../utils/validator';
-
-const config = require( '../config.json' );
+import config from '../config.json';
 
 const UserController = Router();
+
+UserController.get('/users/:id', authMiddleware, async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const user = await User.findOne( { _id : id } );
+        return res.status(200).json( user );
+    } catch ( error ) {
+        next(error);
+    }
+});
 
 UserController.post('/users', authMiddleware, async (req, res, next) => {
     try {
@@ -37,7 +46,7 @@ UserController.get( '/users/:id/active_users', authMiddleware, async( req, res, 
             return res.status(400).json( 'User not found' );
         }
 
-        const activeUsers = await User.find( { socketId: { $ne: '' }, _id: {$ne: user?._id} } ).where( 'blockedUsers' ).ne( user._id );
+        const activeUsers = await User.find( { socketsId: { $exists: true, $ne: [] }, _id: {$ne: user?._id} } ).where( 'blockedUsers' ).ne( user._id );
         return res.status(200).json( activeUsers );
     } catch ( error ) {
         next(error);
@@ -61,8 +70,8 @@ UserController.post( '/users/:id/block', authMiddleware, async( req, res, next )
         const value = validate( req.body, schema );
         const updatedUser = await User.findByIdAndUpdate( { _id: id }, { $push: { blockedUsers: value.id } }, { new: true } );
 
-        let io = req.app.get('socketio');
-        io.to( config.APP_NAME ).emit( 'appUsersUpdate', null );
+        const io = req.app.get('socketio');
+        io.to( config.APP_NAME ).emit( 'blockUsersUpdate', null );
 
         return res.status(200).json( updatedUser );
     } catch ( error ) {
@@ -87,8 +96,8 @@ UserController.post( '/users/:id/unblock', authMiddleware, async( req, res, next
         const value = validate( req.body, schema );
         const updatedUser = await User.findByIdAndUpdate( { _id: id }, { $pullAll: { blockedUsers: [ value.id ] } }, { new: true } );
 
-        let io = req.app.get('socketio');
-        io.to( config.APP_NAME ).emit( 'appUsersUpdate', null );
+        const io = req.app.get('socketio');
+        io.to( config.APP_NAME ).emit( 'blockUsersUpdate', null );
 
         return res.status(200).json( updatedUser );
     } catch ( error ) {
@@ -108,20 +117,19 @@ const joinApp = async ( data: any, socket: any, io: any ) => {
 
     socket.join( config.APP_NAME );
 
-    await User.updateOne( { email: data.email }, { socketId: socket.id } );
-    socket.emit( 'joinedApp', null );
+    await User.updateOne( { email: data.email }, { $push: { socketsId: socket.id } } );
     io.to( config.APP_NAME ).emit( 'appUsersUpdate', null );
 }
 
 // On Leave App
 const leaveApp = async ( socket: any, io: any ) => {
-    const user = await User.findOne( { socketId : socket.id } );
+    const user = await User.findOne( { socketsId : { $in: [ socket.id ] } } );
     if ( !user ) {
         socket.emit( 'error', { error : 'User does not exist' } );
         return;
     }
 
-    await User.updateOne( { socketId : socket.id }, { socketId : '' } );
+    await User.updateOne( { _id : user._id }, { $pullAll: { socketsId: [ socket.id ] } } );
     io.to( config.APP_NAME ).emit( 'appUsersUpdate', null );
 }
 

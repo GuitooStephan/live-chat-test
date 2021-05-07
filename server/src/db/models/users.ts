@@ -4,7 +4,7 @@ import mongoose from 'mongoose';
 export interface IUser {
     email: string;
     name: string;
-    socketId: String;
+    socketsId: string[];
     picture: string;
     blockedUsers: mongoose.Types.ObjectId[] | UserDocument[];
     createdAt: Date;
@@ -21,7 +21,7 @@ export interface UserModel extends mongoose.Model<UserDocument> {
 const userSchema = new mongoose.Schema<UserDocument, UserModel>({
     email: { type: String, unique: true, trim: true },
     name: { type: String, required: true, trim: true },
-    socketId: { type: String, default: ''},
+    socketsId: [{ type: String }],
     picture: { type: String, required: true, trim: true },
     blockedUsers: [{ type : mongoose.Schema.Types.ObjectId, ref: 'User' }],
     createdAt: { type: Date, default: Date.now }

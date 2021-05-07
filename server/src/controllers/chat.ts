@@ -1,6 +1,6 @@
-
 import { Router } from 'express';
 import Joi from 'joi';
+import { Socket } from 'socket.io';
 
 import { Room } from '../db/models/rooms';
 import { User } from '../db/models/users';
@@ -28,20 +28,20 @@ ChatController.post('/rooms', authMiddleware, async (req, res, next) => {
 
 
 // On Join Room
-const joinRoom = async ( data: any, socket: any, io: any ) => {
-    socket.join( data.name );
-    socket.emit( 'joinedRoom', { name: data.name } );
+const joinRoom = async ( data: any, socket: Socket, io: any ) => {
+    if(!socket.rooms.has(data.name)) {
+        socket.join( data.name );
+    }
 }
 
 // On Text
 const sendMessageInRoom = async ( data: any, socket: any, io: any ) => {
     const user = await User.findOne( { _id : data.user } );
-    const toUser = await User.findOne( { _id : data.toUser } );
 
-    const message = { text: data.text, user: user };
-    const room = await Room.updateOne( { name: data.name }, { $push: { messages: message } } );
+    const message = { text: data.text, user };
+    await Room.updateOne( { name: data.name }, { $push: { messages: message } } );
 
-    io.to( data.name ).emit( 'sentMessageInRoom', { text: data.text, user: user?._id } );
+    io.to( data.name ).emit( 'sentMessageInRoom', { text: data.text, user: user?._id, room: data.name  } );
 }
 
 

@@ -3,13 +3,14 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import { json, urlencoded } from 'body-parser';
+import { Server, Socket } from 'socket.io';
 
 import { connectToDB } from './utils/db';
 import { UserController, joinApp, leaveApp } from './controllers/users';
 import { ChatController, joinRoom, sendMessageInRoom } from './controllers/chat';
 import ValidationError from './errors/validation_error';
 
-const config = require( './config.json' );
+import config from './config.json';
 
 
 connectToDB();
@@ -36,7 +37,7 @@ app.use( ( error: any, req: any, res: any, next: any ) => {
 
 const server = http.createServer( app );
 
-const io = require('socket.io')( server, {
+const io = new Server( server, {
     cors: {
         origin: config.CLIENT_URL,
         methods: ["GET", "POST"]
@@ -45,8 +46,7 @@ const io = require('socket.io')( server, {
 
 app.set('socketio', io);
 
-io.on( 'connection', ( socket: any ) => {
-    console.log( 'We have a connection' );
+io.on( 'connection', ( socket: Socket ) => {
     socket.emit( 'connectedApp', null );
 
     socket.on( 'joinApp', async ( data: any, cb: any ) => {
@@ -62,15 +62,12 @@ io.on( 'connection', ( socket: any ) => {
     } );
 
     socket.on( 'disconnect', async () => {
-        console.log( 'A use has left' );
         await leaveApp( socket, io );
     } );
 } );
 
 app.use( '/api/v1/', [ UserController, ChatController ] );
 
-server.listen( config.PORT || 8080, () => {
-    console.info( `Live Chat is online.` );
-} );
+server.listen( config.PORT || 8080 );
 
 export default server;

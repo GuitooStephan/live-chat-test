@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import { User, IUser, UserDocument } from './users';
 
-const crypto = require("crypto");
+import { v4 as uuidv4 } from 'uuid';
 
 export interface IMessage {
     text: string;
@@ -19,7 +19,7 @@ const messageSchema = new mongoose.Schema(
 export interface IRoom {
     name: string;
     participants: mongoose.Types.ObjectId[] | UserDocument[];
-    messages: Array<IMessage>;
+    messages: IMessage[];
     createdAt: Date;
 }
 
@@ -41,16 +41,17 @@ export interface RoomModel extends mongoose.Model<RoomDocument> {
 
 
 const roomSchema = new mongoose.Schema<RoomDocument, RoomModel>({
-    name: { type: String, unique: true, trim: true, default: crypto.randomBytes(16).toString("hex") },
+    name: { type: String, unique: true, trim: true },
     messages: [messageSchema],
     participants: [{ type : mongoose.Schema.Types.ObjectId, ref: 'User' }],
     createdAt: { type: Date, default: Date.now }
 });
 
 roomSchema.statics.getOrCreate = async function( participantOneId, participantTwoId ){
-    let room = await this.findOne( { } ).where( 'participants' ).in( [ participantOneId, participantTwoId ] );
+    let room = await this.findOne( { } ).where( 'participants' ).all( [ participantOneId, participantTwoId ] );
     if ( !room ){
-        room = await this.create( { participants: [ participantOneId, participantTwoId ] } );
+        const name = uuidv4();
+        room = await this.create( { name, participants: [ participantOneId, participantTwoId ] } );
     }
     return room;
 }

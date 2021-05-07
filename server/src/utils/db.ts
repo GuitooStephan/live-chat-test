@@ -1,18 +1,17 @@
 import mongoose from 'mongoose';
 
+import config from '../config.json';
+
 async function connectToDB() {
     try {
-        let url = process.env["MONGODB_URI"] || 'mongodb://mongo:27017';
+        const url = config.MONGODB_URI;
 
         await mongoose.connect( url , {
             useNewUrlParser: true,
             useUnifiedTopology: true,
             useCreateIndex: true
         });
-
-        console.log( 'Connected to database.' );
     } catch (err) {
-        console.log('Error connecting to database.')
         process.exit(1);
     }
 }
