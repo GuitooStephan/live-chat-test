@@ -11,7 +11,7 @@ const MessageInput = props => {
                             value={props.message}
                             className="form-control form-control-lg"/>
                     </div>
-                    <button className="btn-lg btn btn-primary" onClick={ event => event.key === 'Enter' ? props.sendMessage(event) : null }>Send</button>
+                    <button className="btn-lg btn btn-primary" onClick={ event => props.sendMessage(event) }>Send</button>
                 </form>
             </div>
         </>

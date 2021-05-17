@@ -51,7 +51,7 @@ const ActiveUser = props => {
     return (
         <>
             <div className="mb-3 active-user d-flex align-items-center">
-                <Avatar alt="avatar" src={props.user.picture} />
+                <Avatar alt="avatar" className="cursor-pointer" src={props.user.picture} onClick={ event => selectChat() } />
                 <div className="ml-2">
                     <h6 className="font-weight-bold mb-1 font-size-14 email" onClick={ event => selectChat() }>{props.user.email}</h6>
                     <a href="/" onClick={ event => block(event) } className="small text-danger block-button">
