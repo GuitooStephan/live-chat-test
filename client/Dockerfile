@@ -4,7 +4,9 @@ WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm ci -qy 
+RUN npm ci -qy
+
+RUN mkdir node_modules/.cache && chmod -R 777 node_modules/.cache
 
 EXPOSE 3000
 

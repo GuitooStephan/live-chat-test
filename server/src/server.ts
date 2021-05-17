@@ -2,7 +2,7 @@ import http from 'http';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
-import { json, urlencoded } from 'body-parser';
+import { json } from 'body-parser';
 import { Server, Socket } from 'socket.io';
 
 import { connectToDB } from './utils/db';
@@ -18,7 +18,7 @@ connectToDB();
 const app = express();
 
 app.use( json() );
-app.use( urlencoded() );
+app.use( express.urlencoded({ extended: true }) );
 app.use( cors() );
 app.use( helmet() );
 
